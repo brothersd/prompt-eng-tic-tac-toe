@@ -22,7 +22,7 @@ This is a rough guide - feel free to adjust and make it your own.
 # - Getting human player input
 # - Printing the board for the human player to see
 # - Check afer every move to see if:
-#   - Someone one
+#   - Someone won
 #   - Cats game
 
 # Computer AI, we can do player vs computer. We'd like it to be smart

@@ -1,0 +1,6 @@
+#!/home/na/Desktop/CodePlatoon/prompt-eng-tic-tac-toe/venv/bin/python3
+import sys
+from FreeSimpleGUI import main_get_debug_data
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(main_get_debug_data())
