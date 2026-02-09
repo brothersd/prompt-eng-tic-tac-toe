@@ -14,10 +14,26 @@ def check_winner(board):
         return "Tie"
     return None
 
+def update_button(window, key, text):
+    btn = window[key]
+    if btn is not None:
+        btn.update(text=text, disabled=True)  # ✅ Button uses 'text='
+
+def update_status(window, status):
+    status_elem = window["-STATUS-"]
+    if status_elem is not None:
+        status_elem.update(value=status)  # ✅ Text uses 'value='
+
+def reset_board(window, board):
+    for i in range(9):
+        key = str(i)
+        update_button(window, key, "")
+    update_status(window, "Your Turn (X)")
+    board[:] = [""] * 9
+
 def main():
     sg.theme('DarkGrey8') 
     
-    # ✅ STRING KEYS ONLY - NO INTEGERS
     layout = [
         [sg.Text("Your Turn (X)", key="-STATUS-", font=("Arial", 14))],
         [sg.Button("", size=(5, 2), key="0"), sg.Button("", size=(5, 2), key="1"), sg.Button("", size=(5, 2), key="2")],
@@ -31,66 +47,42 @@ def main():
     game_active = True
 
     while True:
-        # ✅ CRITICAL: Check for None BEFORE unpacking
         result = window.read()
         if result is None:
             break
         event, values = result
         
-        # Handle window closure
         if event in (sg.WIN_CLOSED, "-EXIT-"):
             break
-            
-        # Handle Reset
+        
         if event == "-RESET-":
-            board = [""] * 9
-            for i in range(9):
-                key = str(i)
-                elem = window[key]
-                if elem is not None:
-                    elem.update(text="", disabled=False)  # ✅ Button uses 'text='
-            status_elem = window["-STATUS-"]
-            if status_elem is not None:
-                status_elem.update(value="Your Turn (X)")  # ✅ Text uses 'value='
+            reset_board(window, board)
             game_active = True
             continue
 
-        # Human Move
         if game_active and event in [str(i) for i in range(9)]:
             pos = int(event)
             if board[pos] == "":
                 board[pos] = "X"
-                btn = window[event]
-                if btn is not None:
-                    btn.update(text="X", disabled=True)  # ✅ Button uses 'text='
-                
+                update_button(window, event, "X")
+                game_active = False
+
                 res = check_winner(board)
                 if res:
                     msg = "It's a tie!" if res == "Tie" else f"Player {res} wins!"
-                    status_elem = window["-STATUS-"]
-                    if status_elem is not None:
-                        status_elem.update(value=msg)  # ✅ Text uses 'value='
+                    update_status(window, msg)
                     sg.popup(msg)
-                    game_active = False
                 else:
-                    # Computer Move
-                    available = [i for i, s in enumerate(board) if s == ""]
-                    if available:
-                        comp_move = random.choice(available)
-                        board[comp_move] = "O"
-                        comp_key = str(comp_move)
-                        btn = window[comp_key]
-                        if btn is not None:
-                            btn.update(text="O", disabled=True)  # ✅ Button uses 'text='
-                        
-                        res = check_winner(board)
-                        if res:
-                            msg = "It's a tie!" if res == "Tie" else f"Player {res} wins!"
-                            status_elem = window["-STATUS-"]
-                            if status_elem is not None:
-                                status_elem.update(value=msg)  # ✅ Text uses 'value='
-                            sg.popup(msg)
-                            game_active = False
+                    comp_move = random.choice([i for i, s in enumerate(board) if s == ""])
+                    board[comp_move] = "O"
+                    update_button(window, str(comp_move), "O")
+                    game_active = False
+
+                    res = check_winner(board)
+                    if res:
+                        msg = "It's a tie!" if res == "Tie" else f"Player {res} wins!"
+                        update_status(window, msg)
+                        sg.popup(msg)
 
     window.close()
 

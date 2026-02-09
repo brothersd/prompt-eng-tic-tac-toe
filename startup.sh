@@ -37,5 +37,5 @@ fi
 
 echo "------------------------------------------------"
 echo "[SUCCESS] Tic-Tac-Toe Environment is ready!"
-echo "To start, run: python tictactoe_gui.py"
+echo "To start, run: source venv/bin/activate && python tictactoe_gui.py"
 echo "------------------------------------------------"
